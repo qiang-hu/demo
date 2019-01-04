@@ -19,7 +19,7 @@ node('jnlp-slave') {
     stage('Push') {
         echo "4.Push Docker Image Stage"
         withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-            sh "docker login -u ${HarborUser} -p ${HarborPassword}"
+            sh "docker login -u ${HarborUser} -p ${HarborPassword} harbor.ddtester.com"
             sh "docker push harbor.ddtester.com/jenkins-demo:${build_tag}"
         }
     }
