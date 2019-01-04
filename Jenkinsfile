@@ -14,13 +14,13 @@ node('jnlp-slave') {
     }
     stage('Build') {
         echo "3.Build Docker Image Stage"
-        sh "docker build -t harbor.ddtester.com/jenkins-demo:${build_tag} ."
+        sh "docker build -t shansongxian/jenkins-demo:${build_tag} ."
     }
     stage('Push') {
         echo "4.Push Docker Image Stage"
-        withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-            sh "docker login -u ${HarborUser} -p ${HarborPassword} harbor.ddtester.com"
-            sh "docker push harbor.ddtester.com/jenkins-demo:${build_tag}"
+        withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
+            sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
+            sh "docker push shansongxian/jenkins-demo:${build_tag}"
         }
     }
     stage('Deploy') {
