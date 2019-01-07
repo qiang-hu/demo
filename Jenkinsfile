@@ -26,10 +26,12 @@ pipeline {
         }
         // 拉取
         stage ("CheckOut"){ 
+	    checkout scm
             steps {
                 script {
                     try{
-                      checkout([$class: 'GitSCM', branches: [[name: "*/${branch}"]], doGenerateSubmoduleConfigurations: false, extensions: [], submoduleCfg: [], userRemoteConfigs: [[credentialsId: 'gitlab', url: "${git}"]]])
+ 			build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+			build_tag = "${env.BRANCH_NAME}-${build_tag}"
                     }catch(err){
                         echo "${err}"
                         sh 'exit 1'
