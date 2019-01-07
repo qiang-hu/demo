@@ -6,9 +6,6 @@ node('stag-jnlp-slave') {
             build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
             if (env.BRANCH_NAME == 'master' && env.BRANCH_NAME == 'dev') {
                 build_tag = "${env.BRANCH_NAME}-${build_tag}"
-	    } else {
-	      	echo "not master and dev branch exit 0"
-		exit 0
             }
         }
     }
