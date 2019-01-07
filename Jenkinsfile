@@ -26,8 +26,8 @@ pipeline {
         }
         // 拉取
         stage ("CheckOut"){ 
-	    checkout scm
             steps {
+	        checkout scm
                 script {
                     try{
  			build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
