@@ -59,6 +59,7 @@ pipeline {
         		withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
             		sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
             		sh "docker push shansongxian/jenkins-demo:${build_tag}"
+			}
                     }catch(err){
                         echo "${err}"
                         sh 'exit 1'
