@@ -10,22 +10,8 @@ pipeline {
         branch = "huqiang"
     }
     // ------ 以下内容无需修改 ------
-    stages {
-         // 开始构建前清空工作目录
-         stage ("CleanWS"){ 
-            steps {
-                script {
-                    try{
-                       deleteDir()
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }  
-            }  
-        }
         // 拉取
-        stage ("CheckOut"){ 
+        stage ("Prepare"){ 
             steps {
 	        checkout scm
                 script {
