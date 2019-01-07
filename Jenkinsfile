@@ -25,13 +25,9 @@ node('stag-jnlp-slave') {
     }
     stage('Deploy') {
         echo "5. Deploy Stage"
-        when {
-            branch "dev"
-        }
-        steps {
-            sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
-            sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
-            sh "kubectl apply -f k8s.yaml --record"
+        sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
+        sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
+        sh "kubectl apply -f k8s.yaml --record"
         }    
     }
 }
