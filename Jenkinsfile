@@ -87,13 +87,14 @@ pipeline {
         // 使用钉钉插件进行通知
         always {
             script {   
-                def msg = "发布失败！"
+                def msg = "发布失败"
                 def imageUrl = "https://www.iconsdb.com/icons/preview/red/x-mark-3-xxl.png"
                 if (currentBuild.currentResult=="SUCCESS"){
                     imageUrl= "http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-check-icon.png"
-                    msg ="发布成功，干得不错！"
+                    msg ="发布成功，干得不错"
                 }
                 dingTalk accessToken:"https://oapi.dingtalk.com/robot/send?access_token=d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",messageUrl:"${BUILD_URL}"
             }
         }
     }
+}
