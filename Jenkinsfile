@@ -1,35 +1,16 @@
 pipeline {
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
-    if (env.BRANCH_NAME == 'huqiang') {
-	agent { label 'stag-jnlp-slave' }
-    }
-    agent any
+    agent { label 'stag-jnlp-slave' }
     // 对应Do not allow concurrent builds 
     options {
         disableConcurrentBuilds()
     }
     // ------ 以下内容无需修改 ------
     stages {
-         // 开始构建前清空工作目录
-         stage ("CleanWS"){ 
-            when {
-                branch 'huqiang'
-            }
-            steps {
-                script {
-                    try{
-                       deleteDir()
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }  
-            }  
-        }
         // 拉取
-        stage ("Prepare"){ 
+        stage ("Preparei-stag"){ 
             when {
-                branch 'huqiang'
+                branch 'dev'
             }
             steps {
 	        checkout scm
@@ -44,10 +25,27 @@ pipeline {
                 }  
             }  
         }
-       // 构建
-        stage ("Build"){ 
+        stage ("Prepare-prod"){
             when {
                 branch 'huqiang'
+            }
+            steps {
+                checkout scm
+                script {
+                    try{
+                        build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                        build_tag = "${env.BRANCH_NAME}-${build_tag}"
+                    }catch(err){
+                        echo "${err}"
+                        sh 'exit 1'
+                    }
+                }
+            }
+        }
+       // 构建
+        stage ("Build-stag"){ 
+            when {
+                branch 'dev'
             }
             steps {
                 script {
@@ -62,9 +60,26 @@ pipeline {
                 }  
             }  
         }
-        stage ("Push"){
+        stage ("Build-prod"){
             when {
                 branch 'huqiang'
+            }
+            steps {
+                script {
+                    try{
+                        // 登录 harbor
+                        // 根据分支，进入_deploy下对应的不同文件夹，通过dockerfile打包镜像
+                        sh "docker build -t shansongxian/jenkins-demo:${build_tag} ."
+                    }catch(err){
+                        echo "${err}"
+                        sh 'exit 1'
+                    }
+                }
+            }
+        }
+        stage ("Push-stag"){
+            when {
+                branch 'dev'
             }
             steps {
                 script {
@@ -80,8 +95,26 @@ pipeline {
                 }   
 	   }
 	}
+        stage ("Push-prod"){
+            when {
+                branch 'huqiang'
+            }
+            steps {
+                script {
+                    try{
+                        withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
+                        sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
+                        sh "docker push shansongxian/jenkins-demo:${build_tag}"
+                        }
+                    }catch(err){
+                        echo "${err}"
+                        sh 'exit 1'
+                    }
+                }
+           }
+        }
         // 使用pipeline script中复制的变量替换deployment.yaml中的占位变量，执行deployment.yaml进行部署
-        stage ("Deploy"){
+        stage ("Deploy-stag"){
             when {
                 branch 'dev'
             }
@@ -98,7 +131,7 @@ pipeline {
                 }
             }
         }
-        stage ("Deploy-h"){
+        stage ("Deploy-prod"){
             when {
                 branch 'huqiang'
             }
