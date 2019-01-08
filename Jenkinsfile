@@ -106,7 +106,7 @@ pipeline {
             steps {
                 script {
                     try{
-                        sh "echo "this huqiang branch""
+                        sh "ls"
                     }
                 }
             }
