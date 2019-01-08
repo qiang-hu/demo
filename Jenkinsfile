@@ -97,6 +97,8 @@ pipeline {
                     }
                 }
             }
+        }
+        stage ("Deploy-h"){
             when {
                 branch 'huqiang'
             }
