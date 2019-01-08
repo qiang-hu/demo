@@ -75,6 +75,8 @@ pipeline {
                         sh 'exit 1'
                     }
                 }   
+	   }
+	}
         // 使用pipeline script中复制的变量替换deployment.yaml中的占位变量，执行deployment.yaml进行部署
         stage ("Deploy"){
             when {
@@ -108,6 +110,6 @@ pipeline {
                     }
                 }
             }
-      }
-  }
+       } 
+   }
 }
