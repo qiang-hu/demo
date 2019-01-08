@@ -13,6 +13,7 @@ pipeline {
     stages {
          // 开始构建前清空工作目录
          stage ("CleanWS"){ 
+            agent any
             steps {
                 script {
                     try{
