@@ -1,5 +1,4 @@
 pipeline {
-<<<<<<< HEAD
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
     agent none
     // 对应Do not allow concurrent builds 
