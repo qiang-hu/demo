@@ -107,8 +107,12 @@ pipeline {
                 script {
                     try{
                         sh "ls"
+                    }catch(err){
+                        echo "${err}"
+                        sh 'exit 1'
                     }
                 }
+            }
             }
        } 
    }
