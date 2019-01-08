@@ -119,6 +119,9 @@ pipeline {
             when {
                 branch 'master'
             }
+	    agent {
+	    	label 'prod-jnlp-slave'
+            }
             steps {
                 script {
                     try{
