@@ -1,13 +1,9 @@
 pipeline {
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
-    agent none
+    agent any
     // 对应Do not allow concurrent builds 
     options {
         disableConcurrentBuilds()
-    }
-    environment { 
-        // branch: 分支，一般是dev、 master，对应git从哪个分支拉取代码，也对应究竟执行_deploy文件夹下的dev配置还是master配置
-        branch = "dev"
     }
     // ------ 以下内容无需修改 ------
     stages {
