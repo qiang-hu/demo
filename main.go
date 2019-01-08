@@ -1,6 +1,25 @@
 package main
 
+<<<<<<< HEAD
 // add test 3
+=======
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+// add test 2 
+>>>>>>> dev
 // Import the fmt for formatting strings
 // Import os so we can read environment variables from the system
 import (
