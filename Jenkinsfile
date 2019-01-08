@@ -7,7 +7,7 @@ pipeline {
     }
     environment { 
         // branch: 分支，一般是dev、 master，对应git从哪个分支拉取代码，也对应究竟执行_deploy文件夹下的dev配置还是master配置
-        branch = "huqiang"
+        branch = "dev"
     }
     // ------ 以下内容无需修改 ------
     stages {
