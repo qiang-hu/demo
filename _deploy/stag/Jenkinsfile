@@ -1,6 +1,6 @@
 pipeline {
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
-    agent { label 'prod-jnlp-slave' }
+    agent { label 'stag-jnlp-slave' }
     // 对应Do not allow concurrent builds 
     options {
         disableConcurrentBuilds()
@@ -27,7 +27,7 @@ pipeline {
         }
         stage ("Prepare-prod"){
             when {
-                branch 'master'
+                branch 'huqiang'
             }
             steps {
                 checkout scm
@@ -62,7 +62,7 @@ pipeline {
         }
         stage ("Build-prod"){
             when {
-                branch 'master'
+                branch 'huqiang'
             }
             steps {
                 script {
@@ -97,7 +97,7 @@ pipeline {
 	}
         stage ("Push-prod"){
             when {
-                branch 'master'
+                branch 'huqiang'
             }
             steps {
                 script {
@@ -133,7 +133,7 @@ pipeline {
         }
         stage ("Deploy-prod"){
             when {
-                branch 'master'
+                branch 'huqiang'
             }
             steps {
                 script {
