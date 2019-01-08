@@ -24,7 +24,17 @@ pipeline {
         }
        // 测试
         stage ("Test"){
-		echo "2.Test Stage"
+            steps {
+                checkout scm
+                script {
+                    try{
+			echo "2.Test Stage"
+                    }catch(err){
+                        echo "${err}"
+                        sh 'exit 1'
+                    }
+                }
+            }
 	}
        // 构建
         stage ("Build-stag"){ 
