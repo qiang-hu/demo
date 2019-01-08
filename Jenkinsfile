@@ -13,7 +13,12 @@ pipeline {
     stages {
          // 开始构建前清空工作目录
          stage ("CleanWS"){ 
-            agent any
+            when {
+                branch 'huqiang'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
             steps {
                 script {
                     try{
@@ -27,7 +32,12 @@ pipeline {
         }
         // 拉取
         stage ("Prepare"){ 
-	    agent any
+            when {
+                branch 'huqiang'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
             steps {
 	        checkout scm
                 script {
@@ -63,7 +73,12 @@ pipeline {
             }  
         }
         stage ("Push"){
-	    agent any
+            when {
+                branch 'huqiang'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
             steps {
                 script {
                     try{
