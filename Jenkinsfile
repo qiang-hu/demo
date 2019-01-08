@@ -1,5 +1,8 @@
 pipeline {
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
+    if (env.BRANCH_NAME == 'huqiang') {
+	agent { label 'stag-jnlp-slave' }
+    }
     agent any
     // 对应Do not allow concurrent builds 
     options {
