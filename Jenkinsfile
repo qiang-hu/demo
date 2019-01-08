@@ -35,9 +35,6 @@ pipeline {
             when {
                 branch 'huqiang'
             }
-            agent {
-                label 'stag-jnlp-slave'
-            }
             steps {
 	        checkout scm
                 script {
@@ -56,9 +53,6 @@ pipeline {
             when {
                 branch 'huqiang'
             }
-            agent {
-                label 'stag-jnlp-slave'
-            }
             steps {
                 script {
                     try{
@@ -75,9 +69,6 @@ pipeline {
         stage ("Push"){
             when {
                 branch 'huqiang'
-            }
-            agent {
-                label 'stag-jnlp-slave'
             }
             steps {
                 script {
@@ -98,9 +89,6 @@ pipeline {
             when {
                 branch 'dev'
             }
-            agent {
-                label 'stag-jnlp-slave'
-            }
             steps {
                 script {
                     try{
@@ -117,9 +105,6 @@ pipeline {
         stage ("Deploy-h"){
             when {
                 branch 'huqiang'
-            }
-            agent {
-                label 'stag-jnlp-slave'
             }
             steps {
                 script {
