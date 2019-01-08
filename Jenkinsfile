@@ -1,6 +1,6 @@
 pipeline {
     // 指定项目在label为jnlp-agent的节点上构建，也就是Jenkins Slave in Pod
-    agent { label 'stag-jnlp-slave' } 
+    agent none
     // 对应Do not allow concurrent builds 
     options {
         disableConcurrentBuilds()
@@ -26,6 +26,7 @@ pipeline {
         }
         // 拉取
         stage ("Prepare"){ 
+	    agent any
             steps {
 	        checkout scm
                 script {
@@ -41,6 +42,12 @@ pipeline {
         }
        // 构建
         stage ("Build"){ 
+            when {
+                branch 'huqiang'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
             steps {
                 script {
                     try{
@@ -55,6 +62,7 @@ pipeline {
             }  
         }
         stage ("Push"){
+	    agent any
             steps {
                 script {
                     try{
@@ -71,6 +79,12 @@ pipeline {
         }
         // 使用pipeline script中复制的变量替换deployment.yaml中的占位变量，执行deployment.yaml进行部署
         stage ("Deploy"){
+            when {
+                branch 'dev'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
             steps {
                 script {
                     try{
@@ -80,6 +94,19 @@ pipeline {
                     }catch(err){
                         echo "${err}"
                         sh 'exit 1'
+                    }
+                }
+            }
+            when {
+                branch 'huqiang'
+            }
+            agent {
+                label 'stag-jnlp-slave'
+            }
+            steps {
+                script {
+                    try{
+                        sh "echo "this huqiang branch"
                     }
                 }
             }
