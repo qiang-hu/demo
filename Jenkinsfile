@@ -16,9 +16,6 @@ pipeline {
             when {
                 branch 'huqiang'
             }
-            agent {
-                label 'stag-jnlp-slave'
-            }
             steps {
                 script {
                     try{
