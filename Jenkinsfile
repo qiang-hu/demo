@@ -1,8 +1,12 @@
 properties([parameters([choice(name: 'CHOICES', choices: ['master', 'dev', 'huqiang'], description: '')])])
 def branches = ['master', 'dev']
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-if (env.BRANCH_NAME !=  'branches["master"]') {
+if (env.BRANCH_NAME ==  'branches["master"]') {
 	echo "curr $BRANCH_NAME"
+else if (env.BRANCH_NAME ==  'branches["dev"]') {
+	echo "curr $BRANCH_NAME"
+else
+fi
 }
 node('stag-jnlp-slave') {
     stage('Prepare') {
