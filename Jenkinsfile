@@ -3,7 +3,15 @@ pipeline {
     agent { label 'prod-jnlp-slave' }
     // 对应Do not allow concurrent builds 
     options {
+	//不允许并行执行Pipeline,可用于防止同时访问共享资源
         disableConcurrentBuilds()
+	//pipeline保持构建的最大个数
+	buildDiscarder(logRotator(numToKeepStr: '10'))
+	//默认跳过来自源代码控制的代码
+	skipDefaultCheckout()
+    }
+    triggers {
+        cron('* * * * *')
     }
     // ------ 以下内容无需修改 ------
     stages {
@@ -36,112 +44,5 @@ pipeline {
                 }
             }
 	}
-       // 构建
-        stage ("Build-stag"){ 
-            when {
-                branch 'dev'
-            }
-            steps {
-                script {
-                    try{
-                        // 登录 harbor 
-                        // 根据分支，进入_deploy下对应的不同文件夹，通过dockerfile打包镜像
-			sh "docker build -t shansongxian/jenkins-demo:${build_tag} ."
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }  
-            }  
-        }
-        stage ("Build-prod"){
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    try{
-                        // 登录 harbor
-                        // 根据分支，进入_deploy下对应的不同文件夹，通过dockerfile打包镜像
-                        sh "docker build -t shansongxian/jenkins-demo:${build_tag} ."
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }
-            }
-        }
-        stage ("Push-stag"){
-            when {
-                branch 'dev'
-            }
-            steps {
-                script {
-                    try{
-        		withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
-            		sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
-            		sh "docker push shansongxian/jenkins-demo:${build_tag}"
-			}
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }   
-	   }
-	}
-        stage ("Push-prod"){
-            when {
-                branch 'master'
-            }
-            steps {
-                script {
-                    try{
-                        withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
-                        sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
-                        sh "docker push shansongxian/jenkins-demo:${build_tag}"
-                        }
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }
-           }
-        }
-        // 使用pipeline script中复制的变量替换deployment.yaml中的占位变量，执行deployment.yaml进行部署
-        stage ("Deploy-stag"){
-            when {
-                branch 'dev'
-            }
-            steps {
-                script {
-                    try{
-        		sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
-        		sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
-			sh "kubectl apply -f k8s.yaml --record"
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }
-            }
-        }
-        stage ("Deploy-prod"){
-            when {
-                branch 'master'
-            }
-	    agent {
-	    	label 'prod-jnlp-slave'
-            }
-            steps {
-                script {
-                    try{
-                        sh "ls"
-                    }catch(err){
-                        echo "${err}"
-                        sh 'exit 1'
-                    }
-                }
-            }
-       } 
    }
 }
