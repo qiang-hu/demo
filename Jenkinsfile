@@ -5,6 +5,20 @@ if (env.BRANCH_NAME ==  'branches["master"]') {
 	echo "curr $BRANCH_NAME"
 }else if (env.BRANCH_NAME ==  'branches["dev"]') {
 	echo "curr $BRANCH_NAME"
+node('stag-jnlp-slave') {
+    stage('Prepare') {
+        echo "1.Prepare Stage"
+        checkout scm
+        script {
+            if (env.BRANCH_NAME != '${params.CHOICES}') {
+                echo "curr $BRANCH_NAME"
+            }
+        }
+    }
+    stage('Test') {
+      echo "2.Test Stage"
+        }
+}
 }else{
 	echo "curr $BRANCH_NAME"
 }
