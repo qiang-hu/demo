@@ -33,7 +33,7 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
 			sh "kubectl apply -f k8s.yaml --record"
         }
     }    
-}else if (env.BRANCH_NAME ==  'branches["master"]') {
+} else if (env.BRANCH_NAME ==  'branches["master"]') {
     echo "curr $BRANCH_NAME"
     node('prod-jnlp-slave') {
         stage('Prepare') {
@@ -66,7 +66,7 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
         }
     }    
 }
-}else{
+} else {
     echo "curr $BRANCH_NAME"
     node('stag-jnlp-slave') {
         stage('Prepare') {
