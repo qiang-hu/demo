@@ -17,7 +17,6 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
             }
             stage('Test') {
                 echo "2.Test Stage"
-		dd
             }
             stage('Build') {
                 echo "3.Build Docker Image Stage"
@@ -36,7 +35,12 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
                 sh "kubectl apply -f k8s.yaml --record"
             }
-        } finally {    
+        }     
+        catch (exc) {
+            def imageUrl = "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
+            def msg = "部署失败，快去查看原因！！！"  
+        }
+        finally {    
             def jenkinsUrl = "${JENKINS_URL}"
             if (currentBuild.currentResult == "SUCCESS") {
                 imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
