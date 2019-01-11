@@ -89,5 +89,5 @@ if (currentBuild.currentResult=="SUCCESS"){
     imageUrl= "http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-check-icon-2.png"
     msg ="发布成功，干得不错！"
 }
-dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${jenkinsUrl},messageUrl:"${BUILD_URL}"
+dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${jenkinsUrl}",messageUrl:"${BUILD_URL}"
 
