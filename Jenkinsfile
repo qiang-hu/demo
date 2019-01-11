@@ -47,7 +47,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 def msg = "状态为 UNSTABLE，请查看原因！"
             }
             dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${jenkinsUrl}",messageUrl:"${BUILD_URL}"       
-        }        
+        } 
+    }           
 } else if (env.BRANCH_NAME ==  "${stag_branch}") {
     echo "curr $BRANCH_NAME"
     node('stag-jnlp-slave') {
