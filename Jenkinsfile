@@ -6,6 +6,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
     echo "curr $BRANCH_NAME"
     node('prod-jnlp-slave') {
         try {
+            notifyStarted()
             stage('Prepare') {
                 echo "================"
                 echo "1.Prepare Stage"
@@ -33,27 +34,32 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 echo "5.Deploy Stage"
                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
                 sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
-                sh "kubectl apply -f k8s.yaml --recordi"
+                sh "kubectl apply -f k8s.yaml --record"
             }
-        }     
-        catch (exc) {
-            def imageUrl = "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
-            def msg = "部署失败，快去查看原因！！！"  
+            notifySuccessful()
+        } catch (e) {
+            currentBuild.result = "FAILED"
+            notifyFailed()
+            throw e
         }
-        finally {    
-            def jenkinsUrl = "${JENKINS_URL}"
-            if (currentBuild.currentResult == "SUCCESS") {
-                imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-                msg ="发布成功，干得不错！，奖励一个鸡腿"
-            } else if (currentBuild.currentResult == "FAILURE") {
-                def imageUrl = "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
-                def msg = "部署失败，快去查看原因！！！"   
-            } else {
-                def msg = "状态为 UNSTABLE，请查看原因！"
-            }
-            dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${jenkinsUrl}",messageUrl:"${BUILD_URL}"       
-        } 
-    }           
+    }    
+    def notifyStarted() { 
+        def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
+        def msg ="STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+        dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
+    }
+
+    def notifySuccessful() { 
+        def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
+        def msg ="SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+        dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
+    }
+
+    def notifyFailed() { 
+        def imageUrl= "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
+        def msg ="FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+        dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
+    }                
 } else if (env.BRANCH_NAME ==  "${stag_branch}") {
     echo "curr $BRANCH_NAME"
     node('stag-jnlp-slave') {
