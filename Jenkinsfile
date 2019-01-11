@@ -18,6 +18,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Test') {
                     echo "2.Test Stage"
+			dddd
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
@@ -89,32 +90,24 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
         stage('Test') {
             echo "2.Test Stage"
         }
-        def msg = "部署失败，快去查看原因！！！"
-        def jenkinsUrl = "${JENKINS_URL}"
-        def imageUrl = "https://www.iconsdb.com/icons/preview/red/x-mark-3-xxl-2.png"
-        if (currentBuild.currentResult == "SUCCESS"){
-            imageUrl= "http://icons.iconarchive.com/icons/paomedia/small-n-flat/1024/sign-check-icon-2.png"
-            msg ="发布成功，干得不错！，奖励一个鸡腿"
-        }
-        dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${jenkinsUrl}",messageUrl:"${BUILD_URL}"       
     }
 }
 
 def notifyStarted() { 
     def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg ="STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def msg =" 工作启动: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
 }
 
 def notifySuccessful() { 
     def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg ="SUCCESSFUL: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def msg =" 部署成功: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 }
 
 def notifyFailed() { 
     def imageUrl= "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
-    def msg ="FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def msg ="部署失败了！！！: \n Job '${env.JOB_NAME} \n [${env.BUILD_NUMBER}]' \n (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 } 
 
