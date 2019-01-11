@@ -24,13 +24,15 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
             withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
                 sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
                 sh "docker push shansongxian/jenkins-demo:${build_tag}"
-        }
+            }
+        }    
         stage('Deploy') {
             echo "5.Deploy Stage"
             sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
         	sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
 			sh "kubectl apply -f k8s.yaml --record"
         }
+    }    
 }else if (env.BRANCH_NAME ==  'branches["master"]') {
     echo "curr $BRANCH_NAME"
     node('prod-jnlp-slave') {
@@ -54,13 +56,15 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
             withCredentials([usernamePassword(credentialsId: 'DockerHub', passwordVariable: 'DockerHubPassword', usernameVariable: 'DockerHubUser')]) {
                 sh "docker login -u ${DockerHubUser} -p ${DockerHubPassword}"
                 sh "docker push shansongxian/jenkins-demo:${build_tag}"
-        }
+            }
+        }    
         stage('Deploy') {
             echo "5.Deploy Stage"
             sh "sed -i 's/<BUILD_TAG>/${build_tag}/' k8s.yaml"
         	sh "sed -i 's/<BRANCH_NAME>/${env.BRANCH_NAME}/' k8s.yaml"
 			sh "kubectl apply -f k8s.yaml --record"
         }
+    }    
 }
 }else{
     echo "curr $BRANCH_NAME"
@@ -76,4 +80,5 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
         stage('Test') {
             echo "2.Test Stage"
         }
+    }    
 }
