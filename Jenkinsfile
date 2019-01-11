@@ -64,7 +64,6 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
 			sh "kubectl apply -f k8s.yaml --record"
         }
     }    
-}
 } else {
     echo "curr $BRANCH_NAME"
     node('stag-jnlp-slave') {
