@@ -1,6 +1,6 @@
 def branches = ['master', 'dev']
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-if (env.BRANCH_NAME ==  'branches["master"]') {
+if (env.BRANCH_NAME ==  'branches['master']') {
     echo "curr $BRANCH_NAME"
     node('prod-jnlp-slave') {
         stage('Prepare') {
