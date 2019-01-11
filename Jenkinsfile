@@ -1,4 +1,3 @@
-//properties([parameters([choice(name: 'CHOICES', choices: ['master', 'dev', 'huqiang'], description: '')])])
 def branches = ['master', 'dev']
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
 if (env.BRANCH_NAME ==  'branches["dev"]') {
