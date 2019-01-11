@@ -1,8 +1,8 @@
 def branches = ['master', 'dev']
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-if (env.BRANCH_NAME ==  'branches["dev"]') {
+if (env.BRANCH_NAME ==  'branches["master"]') {
     echo "curr $BRANCH_NAME"
-    node('stag-jnlp-slave') {
+    node('prod-jnlp-slave') {
         stage('Prepare') {
             echo "1.Prepare Stage"
             checkout scm
@@ -32,9 +32,9 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
 			sh "kubectl apply -f k8s.yaml --record"
         }
     }    
-} else if (env.BRANCH_NAME ==  'branches["master"]') {
+} else if (env.BRANCH_NAME ==  'branches["dev"]') {
     echo "curr $BRANCH_NAME"
-    node('prod-jnlp-slave') {
+    node('stag-jnlp-slave') {
         stage('Prepare') {
             echo "1.Prepare Stage"
             checkout scm
@@ -80,3 +80,6 @@ if (env.BRANCH_NAME ==  'branches["dev"]') {
         }
     }    
 }
+
+
+//properties([parameters([choice(name: 'CHOICES', choices: ['master', 'dev', 'huqiang'], description: '')])])
