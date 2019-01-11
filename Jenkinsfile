@@ -80,6 +80,8 @@ if (env.BRANCH_NAME ==  'branches["master"]') {
         }
     }    
 }
+dingTalk accessToken: 'https://oapi.dingtalk.com/robot/send?access_token=d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724', imageUrl: '', jenkinsUrl: '', message: '', notifyPeople: ''
+
 
 
 //properties([parameters([choice(name: 'CHOICES', choices: ['master', 'dev', 'huqiang'], description: '')])])
