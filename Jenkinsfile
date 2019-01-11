@@ -17,6 +17,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
             }
             stage('Test') {
                 echo "2.Test Stage"
+		dd
             }
             stage('Build') {
                 echo "3.Build Docker Image Stage"
