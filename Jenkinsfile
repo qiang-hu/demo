@@ -1,6 +1,5 @@
-def branches = ['master', 'dev']
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-if (env.BRANCH_NAME ==  'branches['master']') {
+if (env.BRANCH_NAME ==  'master') {
     echo "curr $BRANCH_NAME"
     node('prod-jnlp-slave') {
         stage('Prepare') {
@@ -32,7 +31,7 @@ if (env.BRANCH_NAME ==  'branches['master']') {
 			sh "kubectl apply -f k8s.yaml --record"
         }
     }    
-} else if (env.BRANCH_NAME ==  'branches["dev"]') {
+} else if (env.BRANCH_NAME ==  'dev') {
     echo "curr $BRANCH_NAME"
     node('stag-jnlp-slave') {
         stage('Prepare') {
