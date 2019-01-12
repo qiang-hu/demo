@@ -18,7 +18,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Test') {
                     echo "2.Test Stage"
-			dddd
+			ddddd
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
@@ -38,10 +38,11 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     sh "kubectl apply -f k8s.yaml --record"
                 }
             notifySuccessful()
-        } catch (e) {
+        } catch (err) {
             currentBuild.result = "FAILED"
             notifyFailed()
-            throw e
+            throw err
+            sh 'exit 1'
         }
     }                   
 } else if (env.BRANCH_NAME ==  "${stag_branch}") {
@@ -95,19 +96,19 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
 
 def notifyStarted() { 
     def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg =" 工作启动: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def msg =" [工作启动] \n: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
 }
 
 def notifySuccessful() { 
     def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg =" 部署成功: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def msg =" [恭喜哦，部署成功] \n: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 }
 
 def notifyFailed() { 
     def imageUrl= "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
-    def msg ="部署失败了！！！: \n Job '${env.JOB_NAME} \n [${env.BUILD_NUMBER}]' \n (${env.BUILD_URL})"
+    def msg =" [部署失败了！！！]\n: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 } 
 
