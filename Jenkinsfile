@@ -18,7 +18,6 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Test') {
                     echo "2.Test Stage"
-		dddd
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
@@ -95,20 +94,20 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
 }
 
 def notifyStarted() { 
-    def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg ="\t[工作启动] \n项目名称:'${env.JOB_NAME}\n构建编号:[${env.BUILD_NUMBER}]'"
-    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
+    def imageUrl= "http://img3.imgtn.bdimg.com/it/u=1018573270,2016126815&fm=26&gp=0.jpg"
+    def msg ="状态:[工作启动] \n项目名称:'${env.JOB_NAME}\n构建编号:[${env.BUILD_NUMBER}]'"
+    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
 }
 
 def notifySuccessful() { 
-    def imageUrl= "http://image.tupian114.com/20101123/07492912.jpg"
-    def msg ="\t[恭喜哦，部署成功] \n项目名称:'${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
+    def imageUrl= "http://img.xinxic.com/img/456dbe74031b1fbd.jpg"
+    def msg ="\t[恭喜哦，部署成功。] \n项目名称:'${env.JOB_NAME} [${env.BUILD_NUMBER}]' (${env.BUILD_URL})"
     dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 }
 
 def notifyFailed() { 
-    def imageUrl= "http://imgsrc.baidu.com/imgad/pic/item/e4dde71190ef76c6e909fd0e9716fdfaaf51673f.jpg"
-    def msg ="\t[部署失败了！！！]\n项目名称:'${env.JOB_NAME}\n构建编号[${env.BUILD_NUMBER}]'"
-    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
+    def imageUrl= "http://img3.imgtn.bdimg.com/it/u=717988008,499956393&fm=26&gp=0.jpg"
+    def msg ="状态:[部署失败了,快去检查日志！]\n项目名称:'${env.JOB_NAME}\n构建编号[${env.BUILD_NUMBER}]'"
+    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
 } 
 
