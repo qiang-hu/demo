@@ -57,7 +57,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
                                 sh 'helm upgrade myrepo/nginx --install --namespace=${job_name} --set ingress.host=www.abc.local .'
-                    }
+                        }
                     // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
                     // sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
                     // withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
@@ -65,7 +65,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     //     sh "helm upgrade"
                     //     sh "helm install myrepo/nginx --version ${build_tag} -f values.yaml"
                     // }
-                }
+                    }
+                }    
             }    
             notifySuccessful()
         } catch (err) {
