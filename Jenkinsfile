@@ -21,7 +21,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
-                    sh "docker build -t harbor.ddtester.com/${JOB_BASE_NAME}:${env.build_tag} ."
+                    sh "docker build -t harbor.ddtester.com/${env.JOB_NAME}:${build_tag} ."
                 }
                 // stage('Push') {
                 //     echo "4.Push Docker Image Stage"
