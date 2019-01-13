@@ -49,7 +49,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     dir('chart') {
                         dir('nginx') {
                             withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                                sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
+                                sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
+                                // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/values.yaml"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${env.JOB_NAME}/' chart/nginx/values.yaml"
