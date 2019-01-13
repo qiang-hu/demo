@@ -13,7 +13,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     checkout scm
                     script {
                         build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                        job_name = sh(returnStdout: true, script: "echo $JOB_NAME|awk -F '/' '{print $1}'").trim()
+                        job_name = sh(returnStdout: true, script: "echo ${env.JOB_NAME}|awk -F '/' '{print $1}'").trim()
                         // build_tag = "${env.BRANCH_NAME}-${git_commit}"
                     }
                 }
