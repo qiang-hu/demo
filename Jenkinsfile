@@ -1,6 +1,7 @@
 def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
 def prod_branch = 'master'
 def stag_branch = 'dev'
+def job_name = `echo ${env.JOB_NAME}|awk -F '/' '{print $1}'`
 
 if (env.BRANCH_NAME ==  "${prod_branch}") {
     echo "curr $BRANCH_NAME"
@@ -13,7 +14,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     checkout scm
                     script {
                         build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                        job_name = sh(returnStdout: true, script: "echo \${env.JOB_NAME}|awk -F '/' '{print \$1}'").trim()
+                        // job_name = sh(returnStdout: true, script: "echo \${env.JOB_NAME}|awk -F '/' '{print \$1}'").trim()
                         // build_tag = "${env.BRANCH_NAME}-${git_commit}"
                     }
                 }
