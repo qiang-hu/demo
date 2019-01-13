@@ -65,6 +65,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     //     sh "helm install myrepo/nginx --version ${build_tag} -f values.yaml"
                     // }
                 }
+            }    
             notifySuccessful()
         } catch (err) {
             currentBuild.result = "FAILED"
