@@ -23,13 +23,13 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
-                    sh "docker build -t harbor.ddtester.com/${job_name}:${build_tag} ."
+                    sh "docker build -t harbor.ddtester.com/${job_name}/${env.BRANCH_NAME}:${build_tag} ."
                 }
                 stage('Push') {
                     echo "4.Push Docker Image Stage"
                     withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
                         sh "docker login -u ${HarborUser} -p ${HarborPassword} harbor.ddtester.com"
-                        sh "docker push harbor.ddtester.com/${job_name}:${build_tag}"
+                        sh "docker push harbor.ddtester.com/${job_name}/${env.BRANCH_NAME}:${build_tag}"
                     }
                     // script {
                     //     def filename = 'chart/nginx/values.yaml'

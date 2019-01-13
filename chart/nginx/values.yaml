@@ -1,95 +1,194 @@
-def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-def prod_branch = 'master'
-def stag_branch = 'dev'
+# Default values for nginx.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
 
-if (env.BRANCH_NAME ==  "${prod_branch}") {
-    echo "curr $BRANCH_NAME"
-    node('prod-jnlp-slave') {
-        try {
-            notifyStarted()
-                stage('Prepare') {
-                    echo "================"
-                    echo "1.Prepare Stage"
-                    checkout scm
-                    script {
-                        build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                        // build_tag = "${env.BRANCH_NAME}-${git_commit}"
-                    }
+namespace: <JOB_NAME>
+replicaCount: 1
+
+image:
+  #code image
+  code_repository: harbor.ddtester.com/<JOB_NAME>/master:<BUILD_TAG>
+  code_pullPolicy: IfNotPresent
+
+  #app service image
+  repository: harbor.ddtester.com/base_image/openresty
+  tag: 1.13
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  annotations: []
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  paths: []
+
+  hosts:
+    - www.abc.com
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+resources: 
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 200m
+    memory: 200Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+volumeMounts:
+  - mountPath: /var/web
+    name: code
+
+volumes:
+  - name: code
+    emptyDir: {}
+
+vhost: |-
+        server {
+                listen 80;
+                server_name localhost;
+                index index.html index.php;
+                root /var/web/www; 
+                access_log /var/log/nginx/access.log;
+                error_log /var/log/nginx/error.log;
+
+                location ~.*\.(html|png|jpg|bmp|jpeg|swf|gif|pdf)$
+                {
+                        root /var/web/www;
+                        expires    7d;
+                        access_log off;
+                        log_not_found off;
                 }
-                stage('Test') {
-                    echo "2.Test Stage"
+                location ~.*\.(js|css)$
+                {
+                        root /var/web/www;
+                        expires    3h;
+                        access_log off;
+                        log_not_found off;
                 }
-                stage('Build') {
-                    echo "3.Build Docker Image Stage"
-                    sh "docker build -t harbor.ddtester.com/${env.JOB_NAME}:${build_tag} ."
+                if ($http_user_agent ~* (Scrapy|Wget|ApacheBench|WebBench|Python-urllib|nmap|w3af|Apache-HttpClient|HttpClient|Java|^$)) {
+                        return 403;
                 }
-                stage('Push') {
-                    echo "4.Push Docker Image Stage"
-                    withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                        sh "docker login -u ${HarborUser} -p ${HarborPassword} harbor.ddtester.com"
-                        sh "docker push harbor.ddtester.com/${env.JOB_NAME}:${build_tag}"
-                    }
-                    // script {
-                    //     def filename = 'chart/nginx/values.yaml'
-                    //     def data = readYaml file: filename
-                    //     data.image.tag = ${build_tag}
-                    //     sh "rm $filename"
-                    //     writeYaml file: filename, data: data
-                    // }
-                    // script {
-                    //     def filename = 'chart/nginx/Chart.yaml'
-                    //     def data = readYaml file: filename
-                    //     data.version = ${build_tag}
-                    //     sh "rm $filename"
-                    //     writeYaml file: filename, data: data
-                    // }
-                    sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/values.yaml"
-                    sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/Chart.yaml"
-                    sh "sed -i 's/<JOB_NAME>/${env.JOB_NAME}/' chart/nginx/values.yaml"
+
+                location ~ \.php(/|$){
+                        root /var/web/www; 
+                        fastcgi_pass   php:9000;
+                        fastcgi_split_path_info ^(.+?\.php)(.*)$;
+                        fastcgi_param PATH_INFO $fastcgi_path_info;
+                        include        fastcgi.conf;
                 }
-                stage('Deploy') {
-                    echo "5.Deploy Stage"
-                    dir('chart') {
-                        dir('nginx') {
-                            withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                                sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
-                                sh "helm upgrade"
-                                sh 'helm upgrade myrepo/nginx --install --namespace=${env.JOB_NAME} --set ingress.host=www.abc.local .'
-                            }
-                    }
-                    // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                    // sh "sed -i 's/<JOB_NAME>/${env.JOB_NAME}/' values.yaml"
-                    // withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                    //     sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
-                    //     sh "helm upgrade"
-                    //     sh "helm install myrepo/nginx --version ${build_tag} -f values.yaml"
-                    // }
-                }
-            notifySuccessful()
-        } catch (err) {
-            currentBuild.result = "FAILED"
-            notifyFailed()
-            throw err
-            sh 'exit 1'
         }
-    }                   
-} 
 
-def notifyStarted() { 
-    def imageUrl= "http://img5q.duitang.com/uploads/blog/201504/21/20150421141329_kjNtm.thumb.224_0.gif"
-    def msg ="状态:[工作启动]\n项目名称:${env.JOB_NAME}\n构建编号:[${env.BUILD_NUMBER}]"
-    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"       
-}
+nginx: |-
+        user  www www;
+        worker_processes auto;
+        worker_cpu_affinity auto;
+        error_log  /var/log/nginx/error.log  warn;
+        pid nginx.pid;
+        worker_rlimit_nofile 65535;
 
-def notifySuccessful() { 
-    def imageUrl= "http://img.xinxic.com/img/456dbe74031b1fbd.jpg"
-    def msg ="[恭喜哦，部署成功。]\n项目名称:${env.JOB_NAME}\n构建编号:[${env.BUILD_NUMBER}]"
-    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
-}
+        events
+        {
+                use epoll;
+                multi_accept on;
+                worker_connections 65510;
+        }
 
-def notifyFailed() { 
-    def imageUrl= "http://img3.imgtn.bdimg.com/it/u=717988008,499956393&fm=26&gp=0.jpg"
-    def msg ="状态:[部署失败了,快去检查日志！]\n项目名称:${env.JOB_NAME}\n构建编号:[${env.BUILD_NUMBER}]"
-    dingTalk accessToken:"d5b6952bdd0b4755c47c47a3d024eacd3ed75956089761b27c9c89af1910d724",message:"${msg}",imageUrl:"${imageUrl}",jenkinsUrl:"${JENKINS_URL}",messageUrl:"${BUILD_URL}"               
-} 
+        http
+        {
+                include       mime.types;
+                default_type  application/octet-stream;
+                charset utf-8;
+                server_tokens off;
+                sendfile on;
+                tcp_nopush on;
+                tcp_nodelay on;
+                keepalive_timeout 40s;
+                client_header_timeout 10;
+                client_body_timeout 10;
+                client_header_buffer_size 4k;
+                server_names_hash_bucket_size 128;
+                large_client_header_buffers 4 32k;
+                client_max_body_size 100m;
+                send_timeout 10;
+                reset_timedout_connection on;
+                open_file_cache max=102400 inactive=20s;
+                open_file_cache_min_uses 1;
+                open_file_cache_valid 30s;
+
+                fastcgi_connect_timeout 300;
+                fastcgi_send_timeout 300;
+                fastcgi_read_timeout 300;
+                fastcgi_buffer_size 128k;          #出现110错误需要更改相应大小值
+                fastcgi_buffers 256 128k;
+                fastcgi_busy_buffers_size 256k;    #fastcgi_buffers的两倍
+                fastcgi_temp_file_write_size 256k; #fastcgi_buffers的两倍
+
+                proxy_connect_timeout 90;
+                proxy_send_timeout 90;
+                proxy_read_timeout 90;
+                proxy_buffer_size 128k;            #出现110错误需要更改相应大小值
+                proxy_buffers 256 128k;
+                proxy_busy_buffers_size 256k;    #proxy_buffers的两倍
+                proxy_temp_file_write_size 256k; #proxy_buffers的两倍
+
+
+                gzip  on;
+                gzip_min_length     256;
+                gzip_buffers        4 16k;
+                gzip_http_version   1.1;
+                gzip_vary on;
+                gzip_comp_level 5;
+                gzip_disable "MSIE [1-6]\.";
+                gzip_proxied any;
+                gzip_types
+                application/atom+xml
+                application/javascript
+                application/json
+                application/ld+json
+                application/manifest+json
+                application/rss+xml
+                application/vnd.geo+json
+                application/vnd.ms-fontobject
+                application/x-font-ttf
+                application/x-web-app-manifest+json
+                application/xhtml+xml
+                application/xml
+                font/opentype
+                image/bmp
+                image/svg+xml
+                image/x-icon
+                text/cache-manifest
+                text/css
+                text/plain
+                text/vcard
+                text/vnd.rim.location.xloc
+                text/vtt
+                text/x-component
+                text/x-cross-domain-policy;
+
+                log_format  access  '$remote_addr - $remote_user [$time_local] "$request"'
+                        '$status $body_bytes_sent "$http_referer"'
+                        '"$http_user_agent" $http_x_forwarded_for';
+                access_log  /var/log/nginx/access.log  access;
+                include vhosts/*.conf;
+        }
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
 
