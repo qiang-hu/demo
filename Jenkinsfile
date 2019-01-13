@@ -7,21 +7,21 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
     node('prod-jnlp-slave') {
         try {
             notifyStarted()
-                // stage('Prepare') {
-                //     echo "================"
-                //     echo "1.Prepare Stage"
-                //     checkout scm
-                //     script {
-                //         build_commit = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                //         build_tag = "${env.BRANCH_NAME}-${build_commit}"
-                //     }
-                // }
+                stage('Prepare') {
+                    echo "================"
+                    echo "1.Prepare Stage"
+                    checkout scm
+                    script {
+                        git_commit = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                        build_tag = "${env.BRANCH_NAME}-${git_commit}"
+                    }
+                }
                 stage('Test') {
                     echo "2.Test Stage"
                 }
                 stage('Build') {
                     echo "3.Build Docker Image Stage"
-                    sh "docker build -t harbor.ddtester.com/${env.JOB_NAME}:${env.GIT_COMMIT} ."
+                    sh "docker build -t harbor.ddtester.com/${JOB_BASE_NAME}:${env.build_tag} ."
                 }
                 // stage('Push') {
                 //     echo "4.Push Docker Image Stage"
