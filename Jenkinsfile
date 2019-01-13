@@ -57,7 +57,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
                                 sh "sed -i 's/<job_name>/${job_name}/' values.yaml"
-                                sh 'helm install myrepo/nginx  --set ingress.host=www.abc.local -f values.yaml -f Chart.yaml'
+                                sh 'helm install myrepo/nginx  --set ingress.host=www.abc.local -f values.yaml --version=${build_tag}'
                         }
                     // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
                     // sh "sed -i 's/<job_name>/${job_name}/' values.yaml"
