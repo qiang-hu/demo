@@ -12,8 +12,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     echo "1.Prepare Stage"
                     checkout scm
                     script {
-                        git_commit = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                        build_tag = "${env.BRANCH_NAME}-${git_commit}"
+                        build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                        // build_tag = "${env.BRANCH_NAME}-${git_commit}"
                     }
                 }
                 stage('Test') {
@@ -23,13 +23,13 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                     echo "3.Build Docker Image Stage"
                     sh "docker build -t harbor.ddtester.com/${env.JOB_NAME}:${build_tag} ."
                 }
-                // stage('Push') {
-                //     echo "4.Push Docker Image Stage"
-                //     withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                //         sh "docker login -u ${HarborUser} -p ${HarborPassword}"
-                //         sh "docker pushharbor.ddtester.com/${env.JOB_NAME}:${build_tag}"
-                //     }
-                // }
+                stage('Push') {
+                    echo "4.Push Docker Image Stage"
+                    withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
+                        sh "docker login -u ${HarborUser} -p ${HarborPassword}"
+                        sh "docker pushharbor.ddtester.com/${env.JOB_NAME}:${build_tag}"
+                    }
+                }
                 // stage('Deploy') {
                 //     echo "5.Deploy Stage"
                 //     sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
