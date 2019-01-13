@@ -52,10 +52,9 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "helm init --client-only --skip-refresh"
                                 sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
                                 // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
-                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/values.yaml"
-                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' chart/nginx/Chart.yaml"
-                                sh "sed -i 's/<JOB_NAME>/${env.JOB_NAME}/' chart/nginx/values.yaml"
-                                sh "helm upgrade"
+                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
+                                sh "sed -i 's/<JOB_NAME>/${env.JOB_NAME}/' values.yaml"
                                 sh 'helm upgrade myrepo/nginx --install --namespace=${env.JOB_NAME} --set ingress.host=www.abc.local .'
                             }
                     }
