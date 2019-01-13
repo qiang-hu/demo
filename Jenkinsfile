@@ -26,8 +26,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 stage('Push') {
                     echo "4.Push Docker Image Stage"
                     withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                        sh "docker login -u ${HarborUser} -p ${HarborPassword}"
-                        sh "docker pushharbor.ddtester.com/${env.JOB_NAME}:${build_tag}"
+                        sh "docker login -u ${HarborUser} -p ${HarborPassword} harbor.ddtester.com"
+                        sh "docker push harbor.ddtester.com/${env.JOB_NAME}:${build_tag}"
                     }
                 }
                 // stage('Deploy') {
