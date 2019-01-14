@@ -58,6 +58,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
                                 sh 'helm upgrade php --install  .'
+                            }    
                         }
                         dir('nginx') {
                             withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
