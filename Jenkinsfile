@@ -11,7 +11,7 @@ node('prod-jnlp-slave')
     job_name="${env.JOB_NAME}".replace('%2F', '/').replace('-', '/').replace('_', '/').split('/')
     job_name=job_name[0].toLowerCase()
     workspace="workspace/${job_name}/${env.BRANCH_NAME}"
-    cd ${workspace}
+    sh "cd ${workspace}"
         dir("pipeline")
         {   
             def check_groovy_file="Jenkinsfile"
