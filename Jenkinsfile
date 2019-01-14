@@ -49,6 +49,16 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 stage('Deploy') {
                     echo "5.Deploy Stage"
                     dir('chart') {
+                        dir('php') {
+                            withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
+                                sh "helm init --client-only --skip-refresh"
+                                sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
+                                // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
+                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
+                                sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
+                                sh 'helm upgrade php --install  .'
+                        }
                         dir('nginx') {
                             withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
                                 sh "helm init --client-only --skip-refresh"
@@ -57,8 +67,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
-                                //sh 'helm install myrepo/nginx  --set ingress.host=www.abc.local -f values.yaml --version=${build_tag}'
-                                sh 'helm upgrade nginx --install  --set ingress.host=staging.spring-example.local .'
+                                sh 'helm upgrade nginx --install  --set ingress.host=demo.ddtester.com .'
                         }
                     // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
                     // sh "sed -i 's/<job_name>/${job_name}/' values.yaml"
