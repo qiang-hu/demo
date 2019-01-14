@@ -11,9 +11,11 @@ node('prod-jnlp-slave')
     job_name="${env.JOB_NAME}".replace('%2F', '/').replace('-', '/').replace('_', '/').split('/')
     job_name=job_name[0].toLowerCase()
     workspace="workspace/${job_name}/${env.BRANCH_NAME}"
-    sh "cd ${workspace}"
+    ws("$workspace")
+	{
         dir("pipeline")
         {   
+	    git url:"https://github.com/shansongxian/pipeline.git"
             def check_groovy_file="Jenkinsfile"
             sh "echo $PWD"
 	    echo "${check_groovy_file}"
@@ -22,4 +24,5 @@ node('prod-jnlp-slave')
         }
         jenkinsFile.start()
     }
+}
 }
