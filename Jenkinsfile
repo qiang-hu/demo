@@ -48,6 +48,16 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                 }
                 stage('Deploy') {
                     echo "5.Deploy Stage"
+                    input 'Do you approve production?'
+
+                    script {                
+                        env.RELEASE = input message: 'Please input the release version',
+                        ok: 'Deploy',
+                        parameters: [
+                            [$class: 'TextParameterDefinition', defaultValue: '0.0.1', description: 'Cureent release version', name: 'release']
+                        ]
+                    }
+                    echo 'Deploy and release: $RELEASE'    
                     dir('chart') {
                         dir('php') {
                             withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
@@ -55,7 +65,7 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
                                 // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
                                 sh 'helm upgrade php --install  .'
                             }    
@@ -66,17 +76,10 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
                                 // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' Chart.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
                                 sh 'helm upgrade nginx --install  .'
                         }
-                    // sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                    // sh "sed -i 's/<job_name>/${job_name}/' values.yaml"
-                    // withCredentials([usernamePassword(credentialsId: 'Harbor', passwordVariable: 'HarborPassword', usernameVariable: 'HarborUser')]) {
-                    //     sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
-                    //     sh "helm upgrade"
-                    //     sh "helm install myrepo/nginx --version ${build_tag} -f values.yaml"
-                    // }
                     }
                 }    
             }    
