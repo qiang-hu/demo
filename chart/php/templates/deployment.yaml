@@ -22,7 +22,7 @@ spec:
     spec:
       initContainers:
         - name: code
-          image: "{{ .Values.image.code_repository }}:{{ .Chart.Version }}"
+          image: "{{ .Values.image.code_repository }}:{{ .Values.image.code_tag }}"
           imagePullPolicy: {{ .Values.image.code_pullPolicy }}
           command: ["sh", "-c", "mv /var/web/www /data"]
           volumeMounts:

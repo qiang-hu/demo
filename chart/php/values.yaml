@@ -7,6 +7,7 @@ namespace: default
 
 image:
   code_repository: harbor.ddtester.com/<JOB_NAME>/master
+  code_tag : <BUILD_TAG>
   code_pullPolicy: IfNotPresent
 
   repository: harbor.ddtester.com/base_image/php

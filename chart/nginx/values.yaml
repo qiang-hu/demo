@@ -8,6 +8,7 @@ replicaCount: 1
 image:
   #code image
   code_repository: harbor.ddtester.com/<JOB_NAME>/master
+  code_tag : <BUILD_TAG>
   code_pullPolicy: IfNotPresent
 
   #app service image
