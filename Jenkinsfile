@@ -2,18 +2,13 @@ import groovy.transform.Field
 
 @Field def job_name=""
 @Field def jenkinsFile=""
-
-node()
+if (env.BRANCH_NAME ==  "${prod_branch}") {
+node('prod-jnlp-slave')
 {
     // if job is building ...wait
     echo env.JOB_NAME
     job_name="${env.JOB_NAME}".replace('%2F', '/').replace('-', '/').replace('_', '/').split('/')
-    sh "echo ${job_name}"
     job_name=job_name[0].toLowerCase()
-    sh "echo ${job_name}"
-    workspace="workspace/${job_name}/${env.BRANCH_NAME}"
-    ws("$workspace")
-    {
         dir("pipeline")
         {   
             def check_groovy_file="Jenkinsfile"
