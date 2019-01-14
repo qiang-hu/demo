@@ -10,6 +10,10 @@ node('prod-jnlp-slave')
     echo env.JOB_NAME
     job_name="${env.JOB_NAME}".replace('%2F', '/').replace('-', '/').replace('_', '/').split('/')
     job_name=job_name[0].toLowerCase()
+    workspace="workspace/${job_name}/${env.BRANCH_NAME}"
+    ws("$workspace")
+    {
+ 
         dir("pipeline")
         {   
             def check_groovy_file="Jenkinsfile"
@@ -20,4 +24,5 @@ node('prod-jnlp-slave')
         }
         jenkinsFile.start()
     }
+}
 }
