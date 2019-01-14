@@ -16,6 +16,5 @@ node()
             jenkinsFile=load "${check_groovy_file}"
 
         }
-        jenkinsFile.start()
     }
 }
