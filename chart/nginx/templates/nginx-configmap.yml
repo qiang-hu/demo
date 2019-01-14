@@ -3,6 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: {{ include "nginx.fullname" . }}-nginx.conf
+  namespace: {{ .Values.namespace }}  
   labels:
     app: {{ include "nginx.fullname" . }}-nginx.conf
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
