@@ -13,6 +13,8 @@ node('prod-jnlp-slave')
         dir("pipeline")
         {   
             def check_groovy_file="Jenkinsfile"
+            sh "echo $PWD"
+	    echo "${check_groovy_file}"
             jenkinsFile=load "${check_groovy_file}"
 
         }
