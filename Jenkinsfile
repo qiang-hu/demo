@@ -4,7 +4,7 @@ import groovy.transform.Field
 @Field def jenkinsFile=""
 def prod_branch = 'master'
 if (env.BRANCH_NAME ==  "${prod_branch}") {
-node('prod-jnlp-slave')
+node()
 {
     // if job is building ...wait
     echo env.JOB_NAME
