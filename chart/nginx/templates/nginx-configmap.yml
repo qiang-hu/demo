@@ -1,0 +1,15 @@
+{{- if .Values.nginx -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "nginx.fullname" . }}-nginx.conf
+  labels:
+    app: {{ include "nginx.fullname" . }}-nginx.conf
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  nginx.conf: |-
+{{ .Values.nginx | indent 4 }}
+{{- end -}}
+
