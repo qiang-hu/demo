@@ -65,8 +65,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
                                 // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh 'helm upgrade php --install  .'
                             }    
                         }
@@ -76,8 +76,8 @@ if (env.BRANCH_NAME ==  "${prod_branch}") {
                                 sh "helm repo add myrepo  http://harbor.ddtester.com/chartrepo/helm"
                                 // sh "helm repo add myrepo --username=${HarborUser} --password=${HarborPassword} http://harbor.ddtester.com/chartrepo/helm"
                                 sh "sed -i 's/<BUILD_TAG>/${build_tag}/' values.yaml"
-                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh "sed -i 's/<JOB_NAME>/${job_name}/' values.yaml"
+                                sh "sed -i 's/<BUILD_TAG>/${env.RELEASE}/' Chart.yaml"
                                 sh 'helm upgrade nginx --install  .'
                         }
                     }
