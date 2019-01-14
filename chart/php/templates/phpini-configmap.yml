@@ -1,0 +1,15 @@
+{{- if .Values.phpini -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "php.fullname" . }}-php.ini
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ include "php.fullname" . }}-php.ini
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+data:
+  php.ini: |-
+{{ .Values.phpini | indent 4 }}
+{{- end -}}

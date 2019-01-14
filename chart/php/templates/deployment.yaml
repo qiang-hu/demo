@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "php.fullname" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app.kubernetes.io/name: {{ include "php.name" . }}
+    helm.sh/chart: {{ include "php.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "php.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "php.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: code
+          image: "{{ .Values.image.code_repository }}:{{ .Values.image.code_tag }}"
+          imagePullPolicy: {{ .Values.image.code_pullPolicy }}
+          command: ["sh", "-c", "mv /var/web/www /data"]
+          volumeMounts:
+          - mountPath: /data
+            name: code
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: tcp
+              containerPort: 9000
+              protocol: TCP
+          volumeMounts:
+          {{- if .Values.phpfpm }}
+            - mountPath: /usr/local/php7/etc/php-fpm.conf
+              name: phpfpm-conf-volume
+              subPath: php-fpm.conf
+          {{- end }}
+          {{- if .Values.phpini }}
+            - mountPath: /usr/local/php7/etc/php.ini
+              name: php-ini-volume
+              subPath: php.ini
+            {{- toYaml .Values.volumeMounts | nindent 12 }}
+          {{- end }}
+          readinessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            tcpSocket:
+              port: 9000
+            initialDelaySeconds: 15
+            periodSeconds: 20
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+      {{- if .Values.phpfpm }}
+        - name: phpfpm-conf-volume
+          configMap:
+            name: {{ include "php.fullname" . }}-php-fpm.conf
+            items:
+            - key: php-fpm.conf
+              path: php-fpm.conf
+      {{- end }}
+      {{- if .Values.phpini }}
+        - name: php-ini-volume
+          configMap:
+            name: {{ include "php.fullname" . }}-php.ini
+            items:
+            - key: php.ini
+              path: php.ini
+        {{- toYaml .Values.volumes | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
