@@ -13,6 +13,7 @@ node()
         {   
 	    git url:"https://github.com/shansongxian/pipeline.git"
             def check_groovy_file="${job_name}/Jenkinsfile"
+            def default_groovy_file="default/Jenkinsfile"
             jenkinsFile=load "${check_groovy_file}"
 
         }
