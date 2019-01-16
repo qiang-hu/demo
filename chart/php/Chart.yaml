@@ -1,5 +1,0 @@
-apiVersion: v1
-appVersion: "php-7.1.18"
-description: A Helm chart for Kubernetes
-name: php
-version: "<BUILD_TAG>"
