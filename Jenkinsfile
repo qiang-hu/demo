@@ -1,24 +1,22 @@
-properties([parameters([choice(name: 'CHOICES', choices: ['master', 'dev', 'huqiang'], description: '')])])
-def branches = ['master', 'dev']
-def labels = ['stag-jnlp-slave', 'prod-jnlp-slave']
-if (env.BRANCH_NAME ==  'branches["master"]') {
-	echo "curr $BRANCH_NAME"
-}else if (env.BRANCH_NAME ==  'branches["dev"]') {
-	echo "curr $BRANCH_NAME"
-}else{
-	echo "curr $BRANCH_NAME"
-}
-node('stag-jnlp-slave') {
-    stage('Prepare') {
-        echo "1.Prepare Stage"
-        checkout scm
-        script {
-            if (env.BRANCH_NAME != '${params.CHOICES}') {
-		echo "curr $BRANCH_NAME"
-            }
+import groovy.transform.Field
+
+@Field def job_name=""
+@Field def jenkinsFile=""
+node()
+{
+
+    job_name="${env.JOB_NAME}".replace('%2F', '/').replace('-', '/').replace('_', '/').split('/')
+    job_name=job_name[0].toLowerCase()
+    workspace="workspace/${job_name}/${env.BRANCH_NAME}"
+    ws("$workspace")
+	{
+        dir("pipeline")
+        {   
+	    git url:"https://github.com/shansongxian/pipeline.git"
+            def check_groovy_file="${job_name}/Jenkinsfile"
+            def default_groovy_file="default/Jenkinsfile"
+            jenkinsFile=load "${check_groovy_file}"
+
         }
     }
-    stage('Test') {
-      echo "2.Test Stage"
-	}
 }
