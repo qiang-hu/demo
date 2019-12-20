@@ -1,0 +1,58 @@
+if: branch =~ ^master$|^development$|^release|^uat
+language: python
+group: stable
+dist: trusty
+os: linux
+sudo: required
+services:
+- docker
+cache: pip
+
+before_install: |-
+    if [ "master" == "${TRAVIS_BRANCH}" ]; then
+      for env_value in $(compgen -v |grep '.*_PRODUCTION$'); do
+        eval export ${env_value%_PRODUCTION}="${!env_value}"
+      done
+      export ENVIRONMENT=production
+    elif [[ "${TRAVIS_BRANCH}" == release*  ]]; then
+      for env_value in $(compgen -v |grep '.*_STAGING$'); do
+        eval export ${env_value%_STAGING}="${!env_value}"
+      done
+      export ENVIRONMENT=staging
+    elif [[ "${TRAVIS_BRANCH}" == uat*  ]]; then
+      for env_value in $(compgen -v |grep '.*_UAT$'); do
+        eval export ${env_value%_UAT}="${!env_value}"
+      done
+      export ENVIRONMENT=uat
+    else
+      for env_value in $(compgen -v |grep '.*_DEVELOPMENT$'); do
+        eval export ${env_value%_DEVELOPMENT}="${!env_value}"
+      done
+      export ENVIRONMENT=development
+    fi
+
+script: |-
+    set -e
+    tag_build_num="0.0.${TRAVIS_BUILD_NUMBER}"
+    export IMAGE="registry.${ALICLOUD_REGION}.aliyuncs.com/huqiang-project/${ALICLOUD_CR_NAME}:$tag_build_num"
+    export IMAGE_LATEST="registry.${ALICLOUD_REGION}.aliyuncs.com/huqiang-project/${ALICLOUD_CR_NAME}:latest"
+    export CR_REPO_LOGIN="docker login --username=${ALICLOUD_USERNAME} --password=${ALICLOUD_PASSWORD} registry.cn-hongkong.aliyuncs.com
+    # cp .env.${ENVIRONMENT} .env
+    # build test image to run test
+    # build the final image
+    docker build -t "$IMAGE" -t $IMAGE_LATEST \
+      --build-arg BUILD_ENV=$ENVIRONMENT \
+      --build-arg NPM_TOKEN=$NPM_TOKEN \
+      --build-arg TRAVIS_BRANCH=$TRAVIS_BRANCH \
+      --build-arg TRAVIS_BUILD_NUMBER=$TRAVIS_BUILD_NUMBER \
+      --build-arg TRAVIS_COMMIT=$TRAVIS_COMMIT \
+      --build-arg TRAVIS_TIMESTAMP="$(date)" \
+      .
+deploy:
+- provider: script
+  script:  >-
+      docker push ${IMAGE}
+      docker push ${IMAGE_LATEST}
+  skip_cleanup: true
+  on:
+    all_branches: true      
