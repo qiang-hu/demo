@@ -36,7 +36,7 @@ script: |-
     tag_build_num="0.0.${TRAVIS_BUILD_NUMBER}"
     export IMAGE="registry.${ALICLOUD_REGION}.aliyuncs.com/huqiang-project/${ALICLOUD_CR_NAME}:$tag_build_num"
     export IMAGE_LATEST="registry.${ALICLOUD_REGION}.aliyuncs.com/huqiang-project/${ALICLOUD_CR_NAME}:latest"
-    export CR_REPO_LOGIN="docker login --username=${ALICLOUD_USERNAME} --password=${ALICLOUD_PASSWORD} registry.cn-hongkong.aliyuncs.com
+    export CR_REPO_LOGIN="docker login --username=${ALICLOUD_ID} --password=${ALICLOUD_KEY} registry.cn-hongkong.aliyuncs.com
     # cp .env.${ENVIRONMENT} .env
     # build test image to run test
     # build the final image
